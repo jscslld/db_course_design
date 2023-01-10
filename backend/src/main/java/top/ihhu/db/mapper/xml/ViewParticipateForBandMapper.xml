@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.ViewParticipateForBandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.ViewParticipateForBand">
+        <result column="cid" property="cid" />
+        <result column="fid" property="fid" />
+        <result column="ptime" property="ptime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cid, fid, ptime
+    </sql>
+
+    <select id="getParticipateList" resultType="top.ihhu.db.model.response.ConcertParticipateListResp">
+        select y.*,x.ptime ptime from view_participate_for_band x,fan y where x.fid = y.fid and x.cid = #{cid}
+        <if test="fname != null and fname != ''">
+            and y.fname LIKE CONCAT('%',#{fname},'%')
+        </if>
+        <if test="fjob != null and fjob != ''">
+            and y.fjob LIKE CONCAT('%',#{fjob},'%')
+        </if>
+        <if test="fsex != null and fsex != ''">
+            and y.fsex LIKE CONCAT('%',#{fsex},'%')
+        </if>
+    </select>
+</mapper>

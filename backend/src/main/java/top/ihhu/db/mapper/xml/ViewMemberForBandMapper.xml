@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.ViewMemberForBandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.ViewMemberForBand">
+        <result column="mid" property="mid" />
+        <result column="mname" property="mname" />
+        <result column="msex" property="msex" />
+        <result column="mage" property="mage" />
+        <result column="mjob" property="mjob" />
+        <result column="menter" property="menter" />
+        <result column="mleave" property="mleave" />
+        <result column="mband" property="mband" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        mid, mname, msex, mage, mjob, menter, mleave, mband
+    </sql>
+
+    <select id="getInBandMemberList" resultType="top.ihhu.db.model.response.BandMemberResp">
+        select * from view_member_for_band
+        <where>
+            <if test="mid != null and mid != ''">
+                mid = #{mid}
+            </if>
+            <if test="msex != null and msex != ''">
+                and  msex = #{msex}
+            </if>
+            <if test="mname != null and mname != ''">
+               and mname like concat('%', #{mname}, '%')
+            </if>
+            <if test="mage_min != null and mage_max != null">
+                and mage between #{mage_min} and #{mage_max}
+            </if>
+            <if test="mjob != null and mjob != ''">
+                and mjob like concat('%', #{mjob}, '%')
+            </if>
+            <if test="menter_min != null and menter_max != null">
+                and menter between menter_min and menter_max
+            </if>
+            and mleave is NULL
+
+        </where>
+        <if test="key != null and key != null and type != null and type != null">
+          order by `${key}` ${type}
+        </if>
+    </select>
+
+    <select id="getOutBandMemberList" resultType="top.ihhu.db.model.response.BandMemberResp">
+        select * from view_member_for_band
+        <where>
+            <if test="mid != null and mid != ''">
+                mid = #{mid}
+            </if>
+            <if test="msex != null and msex != ''">
+                and  msex = #{msex}
+            </if>
+            <if test="mname != null and mname != ''">
+                and mname like concat('%', #{mname}, '%')
+            </if>
+            <if test="mage_min != null and mage_max != null">
+                and mage between #{mage_min} and #{mage_max}
+            </if>
+            <if test="mjob != null and mjob != ''">
+                and mjob like concat('%', #{mjob}, '%')
+            </if>
+            <if test="menter_min != null and menter_max != null">
+                and menter between menter_min and menter_max
+            </if>
+            and mleave is not NULL
+
+        </where>
+        <if test="key != null and key != null and type != null and type != null">
+            order by `${key}` ${type}
+        </if>
+    </select>
+
+    <update id="updateMemberInfo">
+        update view_member_for_band set
+        msex = #{msex},mname = #{mname},mage = #{mage},mjob = #{mjob},menter = #{menter}
+        where mid = #{mid};
+    </update>
+
+    <insert id="insertMemberInfo">
+        insert into view_member_for_band(mname, msex, mage, mjob, menter, mleave, mband)
+        VALUES (#{mname},#{msex},#{mage},#{mjob},#{menter},NULL,#{mband})
+    </insert>
+
+    <update id="updateOutMember">
+        update view_member_for_band set
+        mleave = CURDATE()
+        where mid = #{mid};
+    </update>
+
+    <select id="searchInMemberByName" resultType="top.ihhu.db.model.response.SearchBandMemberResp">
+        select mid value,mname label,false disabled from view_member_for_band where mleave is null;
+    </select>
+
+    <select id="searchOutMemberByName" resultType="top.ihhu.db.model.response.SearchBandMemberResp">
+        select mid value,mname label,true disabled from view_member_for_band where mleave is not null;
+    </select>
+</mapper>

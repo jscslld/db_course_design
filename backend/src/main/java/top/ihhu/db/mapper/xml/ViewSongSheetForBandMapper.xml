@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.ViewSongSheetForBandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.ViewSongSheetForBand">
+        <result column="cid" property="cid" />
+        <result column="sid" property="sid" />
+        <result column="sindex" property="sindex" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cid, sid, sindex
+    </sql>
+
+    <select id="listConcertSong" resultType="top.ihhu.db.model.response.AlbumSongListReq">
+        select sid from view_song_sheet_for_band where cid = #{cid};
+    </select>
+</mapper>

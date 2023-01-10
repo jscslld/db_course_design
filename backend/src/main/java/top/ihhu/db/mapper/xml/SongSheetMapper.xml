@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.SongSheetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.SongSheet">
+        <id column="cid" property="cid" />
+        <id column="sid" property="sid" />
+        <result column="sindex" property="sindex" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cid, sid, sindex
+    </sql>
+
+    <select id="getSongSheetByCid" resultType="top.ihhu.db.model.response.SongSheetResp">
+        select  x.*,y.sname,z.mname sauthor from song_sheet x,song y,member z
+        where x.sid = y.sid and z.mid = y.sauthor and x.cid =#{cid}
+        order by x.sindex asc;
+    </select>
+
+    <select id="getConcertContainCid" resultType="top.ihhu.db.model.response.ConcertSongListResp">
+        select x.*,y.cnt cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid,s.sindex
+        from concert x
+        left outer join song_sheet s on  s.cid = x.cid
+        left outer join view_concert_participate_count_for_fan y on y.cid = x.cid
+        left outer join band b on b.bid = x.cband
+        left outer join view_participate_for_fan z on z.cid = x.cid
+        where s.sid = #{sid}
+        group by x.cid
+    </select>
+</mapper>

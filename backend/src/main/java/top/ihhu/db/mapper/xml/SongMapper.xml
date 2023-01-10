@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.SongMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.Song">
+        <id column="sid" property="sid" />
+        <result column="sname" property="sname" />
+        <result column="sauthor" property="sauthor" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sid, sname, sauthor
+    </sql>
+
+    <select id="getSongList" resultType="top.ihhu.db.model.response.SongLikeListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid,m.mid,m.mname
+        from song x
+        left outer join view_song_fan_count_for_fan y on y.sid = x.sid
+        left outer join member m on  m.mid = x.sauthor
+        left outer join band b on b.bid = m.mband
+        left outer join view_like_song_for_fan z on z.sid = x.sid
+        <where>
+            <if test="sname != null and sname != ''">
+                x.sname LIKE CONCAT('%',#{sname},'%')
+            </if>
+            <if test="bname != null and bname != ''">
+                and b.bname LIKE CONCAT('%',#{bname},'%')
+            </if>
+            <if test="mname != null and mname != ''">
+                and m.mname LIKE CONCAT('%',#{mname},'%')
+            </if>
+        </where>
+        group by x.sid
+        <trim prefix="having" prefixOverrides="and">
+            <if test="liked != null and liked">
+                count(z.fid) = 0
+            </if>
+        </trim>
+    </select>
+
+    <select id="getSongLikeList" resultType="top.ihhu.db.model.response.SongLikeListResp">
+        select x.*,y.cnt fan_cnt,true liked,b.bname,b.bid,m.mid,m.mname
+        from song x,view_song_fan_count_for_fan y,view_like_song_for_fan z,band b,member m
+        <where>
+            x.sid = y.sid and x.sid = z.sid and m.mid = x.sauthor and b.bid = m.mband
+            <if test="sname != null and sname != ''">
+                and x.sname LIKE CONCAT('%',#{sname},'%')
+            </if>
+            <if test="bname != null and bname != ''">
+                and b.bname LIKE CONCAT('%',#{bname},'%')
+            </if>
+            <if test="mname != null and mname != ''">
+                and m.mname LIKE CONCAT('%',#{mname},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getSongInfo" resultType="top.ihhu.db.model.response.SongLikeListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid,m.mid,m.mname
+        from song x
+        left outer join view_song_fan_count_for_fan y on y.sid = x.sid
+        left outer join member m on  m.mid = x.sauthor
+        left outer join band b on b.bid = m.mband
+        left outer join view_like_song_for_fan z on z.sid = x.sid
+        where x.sid = #{sid}
+        group by x.sid
+    </select>
+
+    <select id="getSongListByBid" resultType="top.ihhu.db.model.response.SongLikeListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid,m.mid,m.mname
+        from song x
+        left outer join view_song_fan_count_for_fan y on y.sid = x.sid
+        left outer join member m on  m.mid = x.sauthor
+        left outer join band b on b.bid = m.mband
+        left outer join view_like_song_for_fan z on z.sid = x.sid
+        where b.bid = #{bid}
+        group by x.sid
+    </select>
+</mapper>

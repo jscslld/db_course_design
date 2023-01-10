@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.BandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.Band">
+        <id column="bid" property="bid" />
+        <result column="bname" property="bname" />
+        <result column="bestablish" property="bestablish" />
+        <result column="bhead" property="bhead" />
+        <result column="cnt" property="cnt" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        bid, bname, bestablish, bhead,cnt
+    </sql>
+
+    <select id="getBandList" resultType="top.ihhu.db.model.response.BandListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,mm.mid head_id,mm.mname head_name from band x
+        LEFT OUTER JOIN view_band_fan_count_for_fan y on x.bid = y.bid
+        LEFT OUTER JOIN view_like_band_for_fan z on z.bid = x.bid
+        LEFT OUTER JOIN member mm on mm.mid = x.bhead
+        <where>
+            <if test="bname != null and bname != ''">
+                x.bname LIKE CONCAT('%',#{bname},'%')
+            </if>
+            <if test="headName != null and headName != ''">
+                and mm.mname LIKE CONCAT('%',#{headName},'%')
+            </if>
+        </where>
+        group by x.bid
+        <trim prefix="having" prefixOverrides="and">
+            <if test="liked != null and liked">
+                count(z.fid) = 0
+            </if>
+        </trim>
+    </select>
+
+    <select id="getBandLikeList" resultType="top.ihhu.db.model.response.BandListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,mm.mid head_id,mm.mname head_name from band x
+        LEFT OUTER JOIN view_band_fan_count_for_fan y on x.bid = y.bid
+        LEFT OUTER JOIN view_like_band_for_fan z on z.bid = x.bid
+        LEFT OUTER JOIN member mm on mm.mid = x.bhead
+        <where>
+            <if test="bname != null and bname != ''">
+                x.bname LIKE CONCAT('%',#{bname},'%')
+            </if>
+            <if test="headName != null and headName != ''">
+                and mm.mname LIKE CONCAT('%',#{headName},'%')
+            </if>
+        </where>
+        group by x.bid
+        <trim prefix="having" prefixOverrides="and">
+                count(z.fid) > 0
+        </trim>
+    </select>
+
+    <select id="getBandInfo" resultType="top.ihhu.db.model.response.BandListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,mm.mid head_id,mm.mname head_name from band x
+        LEFT OUTER JOIN view_band_fan_count_for_fan y on x.bid = y.bid
+        LEFT OUTER JOIN view_like_band_for_fan z on z.bid = x.bid
+        LEFT OUTER JOIN member mm on mm.mid = x.bhead
+        where x.bid = #{bid}
+        group by x.bid
+
+    </select>
+
+    <select id="adminGetBandList" resultType="top.ihhu.db.model.response.AdminBandListResp">
+        select x.*,case when count(y.TO_USER) > 0 then true else false end created from band x
+        left outer join  mysql.role_edges y on y.TO_USER = x.bid and y.FROM_USER = 'ROLE_BAND'
+        <where>
+            <if test="bname != null and bname != ''">
+                x.bname LIKE CONCAT('%',#{bname},'%')
+            </if>
+            <if test="bid != null and bid != ''">
+                and x.bid LIKE CONCAT('%',#{bid},'%')
+            </if>
+        </where>
+        group by x.bid
+    </select>
+</mapper>

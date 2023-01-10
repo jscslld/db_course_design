@@ -1,0 +1,50 @@
+version: "3.9"
+services:
+  database:
+    image: mysql:8.0.31
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: esta2022
+    volumes:
+      - ./database/data:/var/lib/mysql
+      - ./database/init.db:/docker-entrypoint-initdb.d/
+      - ./database/my.cnf:/etc/my.cnf
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - db_design
+  backend:
+    build:
+      context: .
+      dockerfile: backend.dockerfile
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./backend/application.yml:/app/backend/application.yml
+    depends_on:
+      - database
+    links:
+      - database
+    networks:
+      - db_design
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.dockerfile
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./frotend:/app/frotend
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/logs:/var/log/nginx
+    ports:
+     - "8088:80"
+    depends_on:
+      - backend
+    links:
+      - backend
+    networks:
+      - db_design
+networks:
+  db_design:
+    ipam:
+      config:
+      - subnet: 172.18.0.0/16

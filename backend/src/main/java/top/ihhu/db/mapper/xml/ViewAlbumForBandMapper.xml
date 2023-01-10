@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.ViewAlbumForBandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.ViewAlbumForBand">
+        <result column="aid" property="aid" />
+        <result column="aname" property="aname" />
+        <result column="acompany" property="acompany" />
+        <result column="adate" property="adate" />
+        <result column="aband" property="aband" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        aid, aname, acompany, adate, aband
+    </sql>
+
+    <select id="getAlbumList" resultType="top.ihhu.db.model.response.AlbumListResp">
+        select x.aid aid,x.aname aname, x.acompany acompany, x.adate adate,count(y.sid) cnt from view_album_for_band x
+        left outer join view_song_album_for_band y on x.aid = y.aid
+        <where>
+            <if test="aname != null and aname != ''">
+                and aname LIKE CONCAT('%',#{aname},'#')
+            </if>
+            <if test="acompany != null and acompany != ''">
+                and acompany LIKE CONCAT('%',#{acompany},'#')
+            </if>
+        </where>
+        group by x.aid
+    </select>
+
+    <update id="updateAlbum">
+        update view_album_for_band set aname = #{aname},acompany = #{acompany}, adate = #{adate} where aid = #{aid};
+    </update>
+
+    <delete id="deleteAlbum">
+        delete from view_album_for_band where aid = #{aid};
+    </delete>
+
+    <insert id="insertAlbum">
+        insert into view_album_for_band(aname, acompany, adate, aband) VALUES (#{aname},#{acompany},#{adate},#{aband});
+    </insert>
+</mapper>

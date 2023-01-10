@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.FanMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.Fan">
+        <id column="fid" property="fid" />
+        <result column="fname" property="fname" />
+        <result column="fsex" property="fsex" />
+        <result column="fage" property="fage" />
+        <result column="fjob" property="fjob" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        fid, fname, fsex, fage, fjob
+    </sql>
+
+    <select id="adminGetFanList" resultType="top.ihhu.db.model.response.AdminFanListResp">
+        select x.*,case when count(y.TO_USER) > 0 then true else false end created from fan x
+        left outer join  mysql.role_edges y on y.TO_USER = x.fid and y.FROM_USER = 'ROLE_FAN'
+        <where>
+            <if test="fname != null and fname != ''">
+                x.fname LIKE CONCAT('%',#{fname},'%')
+            </if>
+            <if test="fid != null and fid != ''">
+                and x.fid LIKE CONCAT('%',#{fid},'%')
+            </if>
+        </where>
+        group by x.fid
+    </select>
+</mapper>

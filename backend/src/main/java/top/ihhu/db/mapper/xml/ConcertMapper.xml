@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.ConcertMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.Concert">
+        <id column="cid" property="cid" />
+        <result column="cstart" property="cstart" />
+        <result column="cend" property="cend" />
+        <result column="clocation" property="clocation" />
+        <result column="cband" property="cband" />
+        <result column="climit" property="climit" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cid, cstart, cend, clocation, cband, climit
+    </sql>
+
+    <select id="getConcertList" resultType="top.ihhu.db.model.response.ConcertLikeListResp">
+        select x.*,y.cnt cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid
+        from concert x
+        left outer join view_concert_participate_count_for_fan y on y.cid = x.cid
+        left outer join band b on b.bid = x.cband
+        left outer join view_participate_for_fan z on z.cid = x.cid
+        <where>
+            <if test="cstart != null">
+                x.cstart <![CDATA[>=]]> #{cstart}
+            </if>
+            <if test="cend != null">
+                and x.cend <![CDATA[<=]]> #{cend}
+            </if>
+            <if test="clocation != null and clocation != ''">
+                and x.clocation LIKE CONCAT('%',#{clocation},'%')
+            </if>
+            <if test="bname != null and bname != ''">
+                and b.bname LIKE CONCAT('%',#{bname},'%')
+            </if>
+        </where>
+        group by x.cid
+        <trim prefix="having" prefixOverrides="and">
+            <if test="liked != null and liked">
+                count(z.fid) = 0
+            </if>
+        </trim>
+    </select>
+
+    <select id="getConcertLikeList" resultType="top.ihhu.db.model.response.ConcertLikeListResp">
+        select x.*,y.cnt cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid
+        from concert x
+        left outer join view_concert_participate_count_for_fan y on y.cid = x.cid
+        left outer join band b on b.bid = x.cband
+        left outer join view_participate_for_fan z on z.cid = x.cid
+        <where>
+            <if test="cstart != null">
+                x.cstart <![CDATA[>=]]> #{cstart}
+            </if>
+            <if test="cend != null">
+                and x.cend <![CDATA[<=]]> #{cend}
+            </if>
+            <if test="clocation != null and clocation != ''">
+                and x.clocation LIKE CONCAT('%',#{clocation},'%')
+            </if>
+            <if test="bname != null and bname != ''">
+                and b.bname LIKE CONCAT('%',#{bname},'%')
+            </if>
+        </where>
+        group by x.cid
+        having count(z.fid) > 0
+    </select>
+
+    <select id="getOneConcert" resultType="top.ihhu.db.model.response.ConcertLikeListResp">
+        select x.*,y.cnt cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid
+        from concert x
+        left outer join view_concert_participate_count_for_fan y on y.cid = x.cid
+        left outer join band b on b.bid = x.cband
+        left outer join view_participate_for_fan z on z.cid = x.cid
+        where x.cid = #{cid}
+        group by x.cid
+    </select>
+
+    <select id="getConcertListByBid" resultType="top.ihhu.db.model.response.ConcertLikeListResp">
+        select x.*,y.cnt cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid
+        from concert x
+        left outer join view_concert_participate_count_for_fan y on y.cid = x.cid
+        left outer join band b on b.bid = x.cband
+        left outer join view_participate_for_fan z on z.cid = x.cid
+        where x.cband = #{bid}
+        group by x.cid
+    </select>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.ViewConcertForBandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.ViewConcertForBand">
+        <result column="cid" property="cid" />
+        <result column="cstart" property="cstart" />
+        <result column="cend" property="cend" />
+        <result column="clocation" property="clocation" />
+        <result column="cband" property="cband" />
+        <result column="climit" property="climit" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cid, cstart, cend, clocation, cband, climit
+    </sql>
+
+    <select id="getConcertList" resultType="top.ihhu.db.model.response.ConcertListResp">
+        select x.cid cid,x.cstart cstart,x.cend cend,x.clocation clocation,x.climit climit,count(y.fid) cnt
+        from view_concert_for_band x
+        left outer join view_participate_for_band y
+        on y.cid = x.cid
+        <where>
+            <if test="cstart != null">
+                x.cstart <![CDATA[>=]]> #{cstart}
+            </if>
+            <if test="cend != null">
+                and x.cend <![CDATA[<=]]> #{cend}
+            </if>
+            <if test="clocation != null and clocation != ''">
+                and x.clocation LIKE CONCAT('%',#{clocation},'%')
+            </if>
+        </where>
+        group by x.cid
+    </select>
+
+    <delete id="deleteConcert">
+        delete from view_concert_for_band where cid = #{cid};
+    </delete>
+
+    <update id="updateConcert">
+        update view_concert_for_band set cstart = #{cstart}, cend = #{cend} , clocation = #{clocation}, climit = #{climit} where cid = #{cid};
+    </update>
+
+    <insert id="insertConcert">
+        insert into view_concert_for_band(cstart, cend, clocation, cband, climit) VALUES (#{cstart},#{cend},#{clocation},#{cband},#{climit});
+    </insert>
+</mapper>

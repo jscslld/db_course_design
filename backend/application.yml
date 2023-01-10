@@ -1,0 +1,26 @@
+database:
+  url: jdbc:mysql://database:3306/db_design?useUnicode=true&characterEncoding=UTF-8
+spring:
+  application:
+    name: db_design
+  mvc:
+    throw-exception-if-no-handler-found: true
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+sa-token:
+  token-name: token
+  timeout: 2592000
+  activity-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: true
+mybatis-plus:
+  configuration:
+    # 是否将sql打印到控制面板(该配置会将sql语句和查询的结果都打印到控制台)
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:top/ihhu/db/mapper/xml/*.xml

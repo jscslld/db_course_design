@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.ViewFanCountByAgeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.ViewFanCountByAge">
+        <result column="age_scope" property="ageScope" />
+        <result column="cnt" property="cnt" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        age_scope, cnt
+    </sql>
+
+    <select id="countByAge" resultType="top.ihhu.db.model.response.FanCountAgeResp">
+        select * from view_fan_count_by_age;
+    </select>
+</mapper>

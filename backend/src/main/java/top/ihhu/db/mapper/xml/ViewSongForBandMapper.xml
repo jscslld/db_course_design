@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.ViewSongForBandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.ViewSongForBand">
+        <result column="sid" property="sid" />
+        <result column="sname" property="sname" />
+        <result column="sauthor" property="sauthor" />
+        <result column="sband" property="sband" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sid, sname, sauthor, sband
+    </sql>
+
+    <select id="getSongList" resultType="top.ihhu.db.model.response.SongListResp">
+        select x.sid sid,x.sname sname,y.mname author_name,y.mid author_id
+        from view_song_for_band x,view_member_for_band y
+        <where>
+            x.sauthor = y.mid
+            <if test="sname != null and sname != ''">
+                and x.sname LIKE CONCAT('%',#{sname},'%')
+            </if>
+            <if test="authorName != null and authorName != ''">
+                and y.mname LIKE CONCAT('%',#{authorName},'%')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateSong">
+        update view_song_for_band set sname = #{sname},sauthor = #{sauthor} where sid = #{sid};
+    </update>
+
+    <delete id="deleteSong">
+        delete from view_song_for_band where sid = #{sid};
+    </delete>
+
+    <insert id="insertSong">
+        insert into view_song_for_band(sname,sauthor) VALUES(#{sname},#{sauthor});
+    </insert>
+
+    <select id="searchSongList" resultType="top.ihhu.db.model.response.SearchBandMemberResp">
+        select sid value,sname label,false disabled from view_song_for_band;
+    </select>
+</mapper>

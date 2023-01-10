@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.AlbumMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.Album">
+        <id column="aid" property="aid" />
+        <result column="aname" property="aname" />
+        <result column="acompany" property="acompany" />
+        <result column="adate" property="adate" />
+        <result column="aband" property="aband" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        aid, aname, acompany, adate, aband
+    </sql>
+
+    <select id="getAlbumList" resultType="top.ihhu.db.model.request.AlbumLikeListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid,count(s.sid) cnt from album x
+        LEFT OUTER JOIN view_album_fan_count_for_fan y on x.aid = y.aid
+        LEFT OUTER JOIN view_like_album_for_fan z on z.aid = x.aid
+        LEFT OUTER JOIN band b on b.bid = x.aband
+        LEFT OUTER JOIN song_album s on s.aid = x.aid
+        <where>
+            <if test="aname != null and aname != ''">
+                x.aname LIKE CONCAT('%',#{aname},'%')
+            </if>
+            <if test="acompany != null and acompany != ''">
+                and x.acompany LIKE CONCAT('%',#{acompany},'%')
+            </if>
+        </where>
+        group by x.aid
+        <trim prefix="having" prefixOverrides="and">
+            <if test="liked != null and liked">
+                count(z.fid) = 0
+            </if>
+        </trim>
+    </select>
+
+    <select id="getAlbumLikeList" resultType="top.ihhu.db.model.request.AlbumLikeListResp">
+        select x.*,z.cnt fan_cnt,true liked,b.bname,b.bid,count(s.sid) cnt from album x,view_like_album_for_fan y,view_album_fan_count_for_fan z,band b,song_album s
+        <where>
+            x.aid = y.aid and x.aid = z.aid and b.bid = x.aband and s.aid = x.aid
+            <if test="aname != null and aname != ''">
+                and x.aname LIKE CONCAT('%',#{aname},'%')
+            </if>
+            <if test="acompany != null and acompany != ''">
+                and x.acompany LIKE CONCAT('%',#{acompany},'%')
+            </if>
+        </where>
+        group by x.aid
+    </select>
+
+    <select id="getAlbumInfo" resultType="top.ihhu.db.model.request.AlbumLikeListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid,count(s.sid) cnt from album x
+        LEFT OUTER JOIN view_album_fan_count_for_fan y on x.aid = y.aid
+        LEFT OUTER JOIN view_like_album_for_fan z on z.aid = x.aid
+        LEFT OUTER JOIN band b on b.bid = x.aband
+        LEFT OUTER JOIN song_album s on s.aid = x.aid
+        where x.aid = #{aid}
+        group by x.aid
+    </select>
+
+    <select id="getAlbumListByBid" resultType="top.ihhu.db.model.request.AlbumLikeListResp">
+        select x.*,y.cnt fan_cnt,(case when count(z.fid) > 0 then true else false end) liked,b.bname,b.bid,count(s.sid) cnt from album x
+        LEFT OUTER JOIN view_album_fan_count_for_fan y on x.aid = y.aid
+        LEFT OUTER JOIN view_like_album_for_fan z on z.aid = x.aid
+        LEFT OUTER JOIN band b on b.bid = x.aband
+        LEFT OUTER JOIN song_album s on s.aid = x.aid
+        where x.aband = #{bid}
+        group by x.aid
+    </select>
+</mapper>

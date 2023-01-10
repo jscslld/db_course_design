@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.ihhu.db.mapper.MemberMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="top.ihhu.db.entity.Member">
+        <id column="mid" property="mid" />
+        <result column="mname" property="mname" />
+        <result column="msex" property="msex" />
+        <result column="mage" property="mage" />
+        <result column="mjob" property="mjob" />
+        <result column="menter" property="menter" />
+        <result column="mleave" property="mleave" />
+        <result column="mband" property="mband" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        mid, mname, msex, mage, mjob, menter, mleave, mband
+    </sql>
+
+    <select id="getInBandMemberList" resultType="top.ihhu.db.model.response.BandMemberResp">
+        select * from member
+        where mleave is NULL and mband = #{bid}
+    </select>
+
+    <select id="getOutBandMemberList" resultType="top.ihhu.db.model.response.BandMemberResp">
+        select * from member
+        where mleave is not NULL and mband = #{bid}
+    </select>
+</mapper>

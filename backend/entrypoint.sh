@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar -server -Xms256m -Xmx256m -XX:CompressedClassSpaceSize=128m -XX:MetaspaceSize=200m -XX:MaxMetaspaceSize=200m -Duser.timezone=GMT+08 /app/backend/db-0.0.1.jar --spring.config.location=file:/app/backend/application.yml
