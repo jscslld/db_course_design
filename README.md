@@ -1,13 +1,14 @@
 # 乐队歌迷管理系统
 
-<div align="center">
+
 [![build status](https://github.com/jscslld/db_course_design/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/jscslld/db_course_design/actions)
 [![contributors](https://img.shields.io/github/contributors/jscslld/db_course_design?color=9ea)](https://github.com/jscslld/db_course_design/graphs/contributors)
 [![commits](https://img.shields.io/github/commit-activity/m/jscslld/db_course_design?color=3af)](https://github.com/jscslld/db_course_design/commits)
 [![issues](https://img.shields.io/github/issues/jscslld/db_course_design?color=9cc)](https://github.com/jscslld/db_course_design/issues)
 ![python version](https://img.shields.io/badge/JDK-17+-orange.svg)
 ![node.js version](https://img.shields.io/badge/nodejs-18+-orange.svg)
-</div>
+
+
 ## 业务场景
 
 某个数据库记录乐队、乐队成员、专辑、歌曲、演唱会和歌迷的信息：
