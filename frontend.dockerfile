@@ -5,4 +5,4 @@ WORKDIR /app/frontend
 RUN yarn
 RUN yarn build
 FROM nginx:1.23.3
-COPY --from=builder /app/frontend/dist/* /usr/share/nginx/html
+COPY --from=builder /app/frontend/dist/* /usr/share/nginx/html/
